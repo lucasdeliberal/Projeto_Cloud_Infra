@@ -1,120 +1,68 @@
-\# Projeto Cloud Infra – Kubernetes (k3s) na AWS
+# Arquitetura – Projeto Cloud Infra (v1)
 
+## Visão Geral
 
-
-Projeto prático de infraestrutura cloud com foco em Kubernetes, alta disponibilidade básica e boas práticas de segurança, desenvolvido para demonstrar experiência real em ambientes de produção.
-
-
-
----
-
-
-
-\## 🎯 Objetivo
-
-Construir e documentar uma infraestrutura funcional em cloud utilizando Kubernetes, com aplicação containerizada distribuída em múltiplos nodes, simulando um cenário real de ambiente corporativo.
-
-
+Este projeto implementa uma aplicação containerizada rodando em Kubernetes (k3s) na AWS,
+com exposição segura via Ingress NGINX, DNS público e HTTPS com Let’s Encrypt.
 
 ---
 
+## Componentes
 
+### Cloud Provider
+- AWS (VPC padrão)
+- Elastic IP para acesso externo estável
+- Security Groups controlando SSH, HTTP e HTTPS
 
-\## 🧱 Arquitetura (v1)
+### Kubernetes
+- Distribuição: k3s
+- Nodes:
+  - 1 Control Plane
+  - 1 Worker
+- CNI: padrão do k3s
+- DNS interno: CoreDNS
 
-\- Cloud Provider: AWS
-
-\- Região: sa-east-1 (São Paulo)
-
-\- Cluster Kubernetes: k3s
-
-\- Nodes:
-
-&nbsp; - 1 Control Plane
-
-&nbsp; - 1 Worker
-
-\- Sistema Operacional: Ubuntu Server
-
-\- Rede: VPC padrão AWS
-
-\- Exposição de serviço: Kubernetes Service (NodePort)
-
-
+### Exposição
+- Service: ClusterIP
+- Ingress Controller: NGINX
+- Ingress: Host-based routing
+- TLS: cert-manager + Let’s Encrypt
 
 ---
 
+## Fluxo de Requisição
 
-
-\## 🐳 Aplicação
-
-\- Site estático simples
-
-\- Containerizado com Docker
-
-\- Baseado em NGINX
-
-\- Imagem distribuída entre os nodes do cluster
-
-
+1. Cliente acessa `https://portfolio.lucasdeliberal.com.br`
+2. DNS resolve para Elastic IP do Worker
+3. Ingress NGINX recebe a requisição
+4. TLS é terminado no Ingress
+5. Requisição encaminhada ao Service
+6. Service direciona para um Pod ativo
 
 ---
 
+## Pontos Críticos Resolvidos
 
-
-\## ☸️ Kubernetes
-
-\- Deployment com múltiplos replicas
-
-\- Service do tipo NodePort
-
-\- Pods distribuídos entre control-plane e worker
-
-\- Balanceamento básico de tráfego
-
-
+- Conflito entre Traefik (default do k3s) e NGINX
+- DNS interno inconsistente (CoreDNS)
+- Webhooks do ingress-nginx
+- Validação ACME (HTTP-01)
+- Conectividade interna entre Pods e Services
 
 ---
 
+## Estado Atual
 
-
-\## 🔐 Segurança
-
-\- Acesso SSH restrito por IP
-
-\- Comunicação entre nodes permitida apenas via Security Group
-
-\- NodePort exposto externamente apenas para testes controlados
-
-
+✔ Aplicação funcional  
+✔ HTTPS válido  
+✔ DNS público configurado  
+✔ Arquitetura documentada  
 
 ---
 
+## Próximas Evoluções
 
-
-\## 📂 Estrutura do Repositório
-
-```text
-
-docker/
-
-&nbsp; ├── Dockerfile
-
-&nbsp; └── index.html
-
-
-
-k8s/
-
-&nbsp; ├── deployment.yaml
-
-&nbsp; └── service.yaml
-
-
-
-docs/
-
-&nbsp; └── architecture-v1.md
-
-
-
+- CI/CD com GitHub Actions
+- Helm Charts
+- Monitoramento com Prometheus e Grafana
+- Gerenciamento com Rancher
