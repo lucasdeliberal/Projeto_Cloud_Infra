@@ -1,0 +1,31 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: v1.29.0
+
+    - name: Configure kubeconfig
+      run: |
+        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
+        chmod 600 kubeconfig
+
+    - name: Deploy manifests
+      env:
+        KUBECONFIG: kubeconfig
+      run: |
+        kubectl apply -f k8s/
+        kubectl rollout status deployment portfolio-site
