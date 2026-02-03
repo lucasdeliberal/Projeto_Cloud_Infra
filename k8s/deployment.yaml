@@ -15,8 +15,8 @@ spec:
         app: portfolio-site
     spec:
       containers:
-        - name: portfolio-site
-          image: ghcr.io/lucasdeliberal/portfolio-site:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 80
+      - name: portfolio-site
+        image: ghcr.io/lucasdeliberal/portfolio-site:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
