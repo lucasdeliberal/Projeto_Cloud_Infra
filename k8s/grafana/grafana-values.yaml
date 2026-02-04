@@ -1,0 +1,30 @@
+grafana:
+  enabled: true
+
+  adminUser: admin
+  adminPassword: admin123
+
+  persistence:
+    enabled: true
+    type: pvc
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+    storageClassName: local-path
+
+  service:
+    type: ClusterIP
+
+  ingress:
+    enabled: false
+
+  grafana.ini:
+    server:
+      root_url: https://grafana.lucasdeliberal.com.br
+      serve_from_sub_path: false
+
+    security:
+      allow_embedding: true
+
+    auth.anonymous:
+      enabled: false
