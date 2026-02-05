@@ -1,4 +1,8 @@
-name: Build and Deploy to Kubernetes
+name: Deploy to Kubernetes
+
+permissions:
+  contents: read
+  packages: read
 
 on:
   push:
@@ -6,21 +10,19 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Login to GitHub Container Registry
-      run: |
-        echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-    - name: Build and push Docker image
-      run: |
-        docker build -t ghcr.io/lucasdeliberal/portfolio-site:latest ./docker
-        docker push ghcr.io/lucasdeliberal/portfolio-site:latest
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v4
@@ -32,7 +34,7 @@ jobs:
         echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
         chmod 600 kubeconfig
 
-    - name: Deploy to Kubernetes
+    - name: Deploy manifests
       env:
         KUBECONFIG: kubeconfig
       run: |
