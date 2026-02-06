@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ingress-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: ingress.rules
+    rules:
+
+    - alert: HighHttp5xxRate
+      expr: |
+        sum(rate(nginx_ingress_controller_requests{status=~"5.."}[5m]))
+        /
+        sum(rate(nginx_ingress_controller_requests[5m])) > 0.05
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Alta taxa de erros 5xx"
+        description: "Mais de 5% das requisições estão retornando erro 5xx."
+
+    - alert: HighIngressLatencyP95
+      expr: |
+        histogram_quantile(0.95,
+          sum(rate(nginx_ingress_controller_request_duration_seconds_bucket[5m])) by (le)
+        ) > 1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Latência alta no Ingress"
+        description: "Latência p95 acima de 1 segundo no Ingress."
+
+    - alert: NoIngressTraffic
+      expr: sum(rate(nginx_ingress_controller_requests[5m])) == 0
+      for: 3m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Queda total de tráfego"
+        description: "Nenhuma requisição recebida pelo Ingress nos últimos 3 minutos."

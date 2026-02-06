@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: kubernetes-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: kubernetes.rules
+    rules:
+
+    - alert: PodCrashLoopBackOff
+      expr: kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"} > 0
+      for: 3m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Pod em CrashLoopBackOff"
+        description: "O pod {{ $labels.pod }} no namespace {{ $labels.namespace }} está reiniciando continuamente."
+
+    - alert: DeploymentReplicasUnavailable
+      expr: kube_deployment_status_replicas_available < kube_deployment_spec_replicas
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Deployment sem réplicas suficientes"
+        description: "O deployment {{ $labels.deployment }} não possui todas as réplicas disponíveis."
+
+    - alert: PodNotReady
+      expr: kube_pod_status_ready{condition="false"} == 1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Pod não pronto"
+        description: "O pod {{ $labels.pod }} está em estado NotReady por mais de 5 minutos."

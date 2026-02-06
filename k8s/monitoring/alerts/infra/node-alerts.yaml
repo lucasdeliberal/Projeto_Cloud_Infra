@@ -1,0 +1,45 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: node.rules
+    rules:
+
+    - alert: NodeDown
+      expr: up{job="node-exporter"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Node fora do ar"
+        description: "O node {{ $labels.instance }} não responde há mais de 2 minutos."
+
+    - alert: NodeHighCPU
+      expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "CPU alta no node"
+        description: "Uso de CPU acima de 85% por 5 minutos no node {{ $labels.instance }}."
+
+    - alert: NodeHighMemory
+      expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Memória alta no node"
+        description: "Uso de memória acima de 85% no node {{ $labels.instance }}."
+
+    - alert: NodeDiskAlmostFull
+      expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 15
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Disco quase cheio"
+        description: "Menos de 15% de espaço livre no node {{ $labels.instance }}."
