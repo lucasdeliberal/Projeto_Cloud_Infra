@@ -1,162 +1,155 @@
-# Projeto Cloud Infra – Kubernetes (k3s) na AWS
+# ☁️ Projeto Cloud Infra — Kubernetes (k3s) na AWS
 
-Projeto prático de **infraestrutura cloud** com foco em **Kubernetes, containerização, rede, segurança, exposição de serviços e TLS**, desenvolvido para demonstrar **experiência prática real** em ambientes próximos de produção.
+Projeto prático de **Infraestrutura Cloud e Kubernetes**, desenvolvido com foco em **ambiente realista de produção**, cobrindo desde provisionamento até **CI/CD, observabilidade, alertas e SLOs**.
+
+Este projeto foi construído como **portfólio técnico**, priorizando decisões arquiteturais, troubleshooting real, boas práticas e documentação clara — exatamente como ocorre no dia a dia de times de **Infra, Cloud, DevOps e SRE**.
 
 ---
 
 ## 🎯 Objetivo do Projeto
 
-Projetar, implementar e documentar uma **infraestrutura Kubernetes funcional na AWS**, utilizando soluções leves e custo-efetivas, aplicando conceitos reais de:
+Projetar, implementar, operar e documentar uma **infraestrutura Kubernetes funcional na AWS**, utilizando componentes open-source e soluções custo-efetivas, abordando:
 
-- Orquestração de containers
-- Balanceamento de carga
-- Exposição segura de aplicações
-- DNS e HTTPS
-- Observabilidade de problemas reais de cluster
-- Resolução de incidentes comuns em Kubernetes
-
-O projeto foi desenvolvido como **portfólio técnico**, simulando decisões, erros, investigações e soluções encontradas no dia a dia de times de **Infra / Cloud / SRE**.
+- Kubernetes (k3s) em ambiente cloud
+- Exposição segura de aplicações (Ingress + TLS)
+- DNS e HTTPS com certificados válidos
+- CI/CD com GitHub Actions
+- Observabilidade completa (métricas, dashboards e alertas)
+- Definição de SLIs, SLOs e Error Budget
+- Troubleshooting real de cluster Kubernetes
 
 ---
 
 ## 🧱 Arquitetura Geral
 
-### Visão Geral
+### ☁️ Cloud & Infra
 
 - **Cloud Provider:** AWS  
 - **Região:** sa-east-1 (São Paulo)  
-- **Cluster Kubernetes:** k3s (lightweight Kubernetes)  
 - **Sistema Operacional:** Ubuntu Server  
 - **Rede:** VPC padrão AWS  
-- **Domínio:** `lucasdeliberal.com.br` (Registro.br + Route 53)  
+- **Domínio:** `lucasdeliberal.com.br` (Registro.br + Route 53)
 
-### Topologia do Cluster
+### ☸️ Cluster Kubernetes
 
-| Função          | Quantidade | Observações |
-|-----------------|------------|-------------|
-| Control Plane   | 1          | API Server, Scheduler e Controllers |
-| Worker Node     | 1          | Execução das aplicações |
-| Total de Nodes  | 2          | Preparado para testes de escalabilidade |
+- **Distribuição:** k3s (lightweight Kubernetes)
+- **Topologia:**
 
----
+| Função        | Quantidade | Observações |
+|--------------|------------|-------------|
+| Control Plane | 1 | API Server, Scheduler e Controllers |
+| Worker Node   | 1 | Execução das workloads |
+| Total         | 2 | Preparado para expansão |
 
-## 🌐 Exposição da Aplicação
-
-A aplicação é exposta seguindo um **fluxo real de produção**:
-
-1. **Service (ClusterIP)**  
-   Comunicação interna entre Pods.
-
-2. **Ingress Controller (NGINX)**  
-   Responsável por:
-   - Roteamento HTTP/HTTPS
-   - Terminação TLS
-   - Integração com cert-manager
-
-3. **DNS + Elastic IP (AWS)**
-   - Domínio apontando para um **Elastic IP**
-   - Evita perda de acesso após reinicialização das instâncias
+- **Ingress Controller:** NGINX  
+- **CNI:** Flannel  
+- **DNS Interno:** CoreDNS  
 
 ---
 
 ## 🐳 Aplicação
 
 - **Tipo:** Site estático
-- **Servidor:** NGINX
+- **Servidor Web:** NGINX
 - **Containerização:** Docker
-- **Imagem:** Build local
-- **Objetivo:** Simples por design, foco total na infraestrutura
+- **Imagem:** Publicada no GitHub Container Registry (GHCR)
+- **Objetivo:** Aplicação simples por design, com foco total na infraestrutura
 
 ---
 
-## ☸️ Kubernetes — Detalhes Técnicos
+## 🌐 Exposição da Aplicação
 
-### Recursos Utilizados
+Fluxo de exposição semelhante a ambientes de produção:
 
-- **Deployment**
-  - Múltiplas réplicas
-  - Distribuição entre nodes
-- **Service**
-  - Tipo: `ClusterIP`
-- **Ingress**
-  - Controller: NGINX
-  - Host-based routing
-  - TLS habilitado
-- **IngressClass**
-- **cert-manager**
-  - Emissão automática de certificados TLS (Let’s Encrypt)
+1. **Service (ClusterIP)**  
+   Comunicação interna entre Pods.
 
----
+2. **Ingress (NGINX)**  
+   - Roteamento HTTP/HTTPS
+   - Terminação TLS
+   - Integração com cert-manager
 
-## 🔐 Segurança
+3. **DNS + Elastic IP (AWS)**  
+   - Domínios apontando para Elastic IP
+   - Evita indisponibilidade após reinício de instâncias
 
-### AWS
+### 🔗 URLs Ativas
 
-- **Security Groups**
-  - SSH restrito por IP
-  - Comunicação entre nodes permitida apenas via SG
-  - NodePorts abertos somente quando necessário
-- **Elastic IP**
-  - Evita dependência de IP dinâmico
+- **Aplicação:**  
+  👉 https://portfolio.lucasdeliberal.com.br
 
-### Kubernetes
-
-- Comunicação interna via Service
-- TLS com certificado válido (HTTPS)
-- Nenhum segredo sensível versionado no repositório
+- **Grafana (Observabilidade):**  
+  👉 https://grafana.lucasdeliberal.com.br
 
 ---
 
-## 🔒 HTTPS & Certificados
+## 🔐 HTTPS & Certificados
 
-- **Ferramenta:** cert-manager
-- **Autoridade Certificadora:** Let’s Encrypt
-- **Validação:** HTTP-01
-- **Ingress:** NGINX
+- **Ferramenta:** cert-manager  
+- **CA:** Let’s Encrypt  
+- **Validação:** HTTP-01  
+- **Ingress:** NGINX  
 
-### Resultado
-
-✅ HTTPS funcional em:  
-**https://portfolio.lucasdeliberal.com.br**
+Certificados emitidos automaticamente e renovados sem intervenção manual.
 
 ---
 
-## 🧪 Problemas Reais Enfrentados e Soluções
+## 🔁 CI/CD — GitHub Actions
 
-Durante a implementação, foram identificados e resolvidos diversos problemas reais, incluindo:
+Pipeline automatizado para **build e deploy no Kubernetes**:
 
-- Conflito entre **Traefik (default do k3s)** e **NGINX Ingress**
-- Webhook do ingress-nginx indisponível
-- DNS interno do cluster (CoreDNS) inoperante
-- Falhas de resolução de serviços internos
-- Timeouts na validação ACME (Let’s Encrypt)
-- Ajustes manuais de CNI e rede
-- Troubleshooting de NodePort, Ingress e LoadBalancer
-- Diferença de comportamento entre Node 1 e Node 2
+### 🔄 Fluxo
 
-Esses problemas foram tratados com:
-- Análise de logs
-- Testes internos com Pods utilitários
-- Reconfiguração de serviços
-- Reinicialização controlada de componentes críticos
-- Validação fim a fim (DNS → Ingress → Service → Pod)
+1. Push para a branch `main`
+2. Build da imagem Docker
+3. Push da imagem para o **GitHub Container Registry**
+4. Deploy automático no cluster Kubernetes via `kubectl`
+
+### 🔐 Autenticação
+
+- ServiceAccount dedicada no cluster
+- RBAC com permissões mínimas necessárias
+- Kubeconfig gerado especificamente para CI
+- Secrets armazenados de forma segura no GitHub
 
 ---
 
-## 📂 Estrutura do Repositório
+## 📊 Observabilidade
+
+### Stack Utilizada
+
+- **Prometheus Operator**
+- **Prometheus**
+- **Alertmanager**
+- **Grafana**
+- **Node Exporter**
+- **kube-state-metrics**
+
+Instalação realizada via **Helm (kube-prometheus-stack)**.
+
+---
+
+### 📈 Dashboards
+
+Dashboards configurados no Grafana para:
+
+- Saúde do cluster
+- Nodes (CPU, memória, disco)
+- Kubernetes (pods, deployments, namespaces)
+- Ingress NGINX (tráfego, latência, erros)
+
+Dashboards customizados exportados e versionados.
+
+---
+
+## 🚨 Alertas (Prometheus)
+
+Alertas criados manualmente utilizando **PrometheusRule**, versionados no repositório.
+
+### Estrutura
 
 ```text
-docker/
- ├── Dockerfile
- └── index.html
-
-k8s/
- ├── deployment.yaml
- ├── service.yaml
- ├── ingress.yaml
-cert-manager/
- └── clusterissuer.yaml
-
-docs/
- └── architecture-v1.md
-
+k8s/monitoring/alerts/
+├── infra/
+├── kubernetes/
+└── ingress/

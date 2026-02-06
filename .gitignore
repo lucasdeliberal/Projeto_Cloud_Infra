@@ -1,3 +1,49 @@
-# Kubernetes
-k8s/kubeconfig-ci.yaml
-kubeconfig
+# ========================
+# Kubernetes / Cloud
+# ========================
+kubeconfig*
+*kubeconfig
+*.kubeconfig
+kuberconfig-ci.yaml
+
+# Certificados
+*.pem
+*.crt
+*.key
+certs/
+cert-manager/certs/
+
+# ========================
+# Secrets / Env
+# ========================
+.env
+.env.*
+secrets.yaml
+
+# ========================
+# Logs / Temp
+# ========================
+logs/
+*.log
+tmp/
+.cache/
+
+# ========================
+# OS / Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ========================
+# Helm
+# ========================
+charts/
+*.tgz
+
+# ========================
+# Node / Python (se usar futuramente)
+# ========================
+node_modules/
+__pycache__/
