@@ -1,16 +1,22 @@
 # ☁️ Projeto Cloud Infra — Kubernetes (k3s) na AWS
 
-Projeto prático de **Infraestrutura Cloud e Kubernetes**, desenvolvido com foco em **ambiente realista de produção**, cobrindo desde provisionamento até **CI/CD, observabilidade, alertas e SLOs**.
+Projeto prático de **Infraestrutura Cloud, Kubernetes e SRE**, construído com foco em **ambiente realista de produção**, cobrindo **provisionamento, CI/CD, observabilidade, alertas e SLOs**.
 
-Este projeto foi construído como **portfólio técnico**, priorizando decisões arquiteturais, troubleshooting real, boas práticas e documentação clara — exatamente como ocorre no dia a dia de times de **Infra, Cloud, DevOps e SRE**.
+Este projeto foi desenvolvido como **portfólio técnico**, priorizando:
+- decisões arquiteturais conscientes  
+- troubleshooting real  
+- boas práticas de mercado  
+- documentação clara e rastreável  
+
+Tudo aqui reflete **cenários reais enfrentados por times de Infra, Cloud, DevOps e SRE**.
 
 ---
 
 ## 🎯 Objetivo do Projeto
 
-Projetar, implementar, operar e documentar uma **infraestrutura Kubernetes funcional na AWS**, utilizando componentes open-source e soluções custo-efetivas, abordando:
+Projetar, implementar, operar e documentar uma **infraestrutura Kubernetes funcional na AWS**, utilizando ferramentas open-source e soluções custo-efetivas, abordando:
 
-- Kubernetes (k3s) em ambiente cloud
+- Kubernetes em cloud (k3s)
 - Exposição segura de aplicações (Ingress + TLS)
 - DNS e HTTPS com certificados válidos
 - CI/CD com GitHub Actions
@@ -28,58 +34,63 @@ Projetar, implementar, operar e documentar uma **infraestrutura Kubernetes funci
 - **Região:** sa-east-1 (São Paulo)  
 - **Sistema Operacional:** Ubuntu Server  
 - **Rede:** VPC padrão AWS  
-- **Domínio:** `lucasdeliberal.com.br` (Registro.br + Route 53)
+- **IP Público:** Elastic IP  
+- **Domínio:** `lucasdeliberal.com.br`  
+
+---
 
 ### ☸️ Cluster Kubernetes
 
 - **Distribuição:** k3s (lightweight Kubernetes)
-- **Topologia:**
+- **Topologia atual:**
 
 | Função        | Quantidade | Observações |
 |--------------|------------|-------------|
-| Control Plane | 1 | API Server, Scheduler e Controllers |
+| Control Plane | 1 | API Server, Scheduler, Controllers |
 | Worker Node   | 1 | Execução das workloads |
 | Total         | 2 | Preparado para expansão |
 
-- **Ingress Controller:** NGINX  
 - **CNI:** Flannel  
-- **DNS Interno:** CoreDNS  
+- **DNS interno:** CoreDNS  
+- **Ingress Controller:** NGINX  
 
 ---
 
 ## 🐳 Aplicação
 
-- **Tipo:** Site estático
+- **Tipo:** Site estático (portfolio técnico)
 - **Servidor Web:** NGINX
 - **Containerização:** Docker
-- **Imagem:** Publicada no GitHub Container Registry (GHCR)
-- **Objetivo:** Aplicação simples por design, com foco total na infraestrutura
+- **Registry:** GitHub Container Registry (GHCR)
+- **Imagem:** `ghcr.io/lucasdeliberal/portfolio-site:latest`
+
+> A aplicação é propositalmente simples — o foco do projeto está **100% na infraestrutura**.
 
 ---
 
 ## 🌐 Exposição da Aplicação
 
-Fluxo de exposição semelhante a ambientes de produção:
+Fluxo inspirado em ambientes de produção:
 
 1. **Service (ClusterIP)**  
    Comunicação interna entre Pods.
 
 2. **Ingress (NGINX)**  
-   - Roteamento HTTP/HTTPS
-   - Terminação TLS
-   - Integração com cert-manager
+   - Roteamento HTTP/HTTPS  
+   - Terminação TLS  
+   - Integração com cert-manager  
 
 3. **DNS + Elastic IP (AWS)**  
-   - Domínios apontando para Elastic IP
-   - Evita indisponibilidade após reinício de instâncias
+   - Domínios apontando para Elastic IP  
+   - Evita indisponibilidade após reinício de instâncias  
 
 ### 🔗 URLs Ativas
 
-- **Aplicação:**  
-  👉 https://portfolio.lucasdeliberal.com.br
+- **Aplicação (Portfolio):**  
+  👉 https://portfolio.lucasdeliberal.com.br  
 
 - **Grafana (Observabilidade):**  
-  👉 https://grafana.lucasdeliberal.com.br
+  👉 https://grafana.lucasdeliberal.com.br  
 
 ---
 
@@ -90,26 +101,26 @@ Fluxo de exposição semelhante a ambientes de produção:
 - **Validação:** HTTP-01  
 - **Ingress:** NGINX  
 
-Certificados emitidos automaticamente e renovados sem intervenção manual.
+Certificados TLS emitidos automaticamente e renovados sem intervenção manual.
 
 ---
 
 ## 🔁 CI/CD — GitHub Actions
 
-Pipeline automatizado para **build e deploy no Kubernetes**:
+Pipeline automatizado para **build e deploy contínuo no Kubernetes**.
 
-### 🔄 Fluxo
+### 🔄 Fluxo do Pipeline
 
 1. Push para a branch `main`
 2. Build da imagem Docker
 3. Push da imagem para o **GitHub Container Registry**
 4. Deploy automático no cluster Kubernetes via `kubectl`
 
-### 🔐 Autenticação
+### 🔐 Segurança e Autenticação
 
 - ServiceAccount dedicada no cluster
-- RBAC com permissões mínimas necessárias
-- Kubeconfig gerado especificamente para CI
+- RBAC com permissões mínimas
+- Kubeconfig exclusivo para CI
 - Secrets armazenados de forma segura no GitHub
 
 ---
@@ -118,14 +129,14 @@ Pipeline automatizado para **build e deploy no Kubernetes**:
 
 ### Stack Utilizada
 
-- **Prometheus Operator**
-- **Prometheus**
-- **Alertmanager**
-- **Grafana**
-- **Node Exporter**
-- **kube-state-metrics**
+- Prometheus Operator
+- Prometheus
+- Alertmanager
+- Grafana
+- Node Exporter
+- kube-state-metrics
 
-Instalação realizada via **Helm (kube-prometheus-stack)**.
+Instalação via **Helm (kube-prometheus-stack)**.
 
 ---
 
@@ -133,18 +144,18 @@ Instalação realizada via **Helm (kube-prometheus-stack)**.
 
 Dashboards configurados no Grafana para:
 
-- Saúde do cluster
+- Saúde geral do cluster
 - Nodes (CPU, memória, disco)
 - Kubernetes (pods, deployments, namespaces)
 - Ingress NGINX (tráfego, latência, erros)
 
-Dashboards customizados exportados e versionados.
+Dashboards customizados exportados e versionados no repositório.
 
 ---
 
 ## 🚨 Alertas (Prometheus)
 
-Alertas criados manualmente utilizando **PrometheusRule**, versionados no repositório.
+Alertas definidos manualmente utilizando **PrometheusRule**, versionados em código.
 
 ### Estrutura
 

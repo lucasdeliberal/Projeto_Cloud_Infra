@@ -1,34 +1,460 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Lucas Deliberal | Cloud & Infra</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .card {
-      background: #020617;
-      padding: 40px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,.5);
-    }
-    h1 { color: #38bdf8; }
-    p { margin-top: 10px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Projeto Cloud Infra — Kubernetes (k3s) na AWS</title>
+
+<style>
+:root {
+  --bg: #0b1020;
+
+  /* menu / footer */
+  --bg-menu: #162044;
+  --bg-menu-scroll: rgba(22,32,68,.6);
+
+  --card: rgba(255,255,255,.045);
+  --border: rgba(255,255,255,.08);
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --primary: #38bdf8;
+  --accent: #a78bfa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+/* FUNDO COM LOGOS + OVERLAY AZUL */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    linear-gradient(
+      rgba(11,16,32,0.88),
+      rgba(11,16,32,0.88)
+    ),
+    url("assets/bg-logos.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text);
+  line-height: 1.8;
+}
+
+a { color: var(--primary); text-decoration: none; }
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 3.5rem 1.5rem;
+}
+
+section {
+  margin-bottom: 5.5rem;
+  scroll-margin-top: 110px;
+}
+
+/* MENU */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-menu);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: background .25s ease;
+}
+
+nav.scrolled {
+  background: var(--bg-menu-scroll);
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  overflow-x: auto;
+}
+
+.nav-container a {
+  color: var(--muted);
+  font-size: 1.05rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.nav-container a:hover {
+  color: var(--primary);
+}
+
+/* HEADER */
+header {
+  padding: 6rem 1.5rem 5rem;
+}
+
+h1 {
+  font-size: 3.6rem;
+  letter-spacing: -1px;
+  margin-bottom: 1.2rem;
+}
+
+h2 {
+  font-size: 2.4rem;
+  margin-bottom: 1.6rem;
+}
+
+h3 {
+  margin-top: 2.2rem;
+  margin-bottom: .6rem;
+  font-weight: 600;
+}
+
+p {
+  color: var(--muted);
+  max-width: 960px;
+  margin-bottom: 1.1rem;
+}
+
+ul {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+ul li {
+  color: var(--muted);
+  margin-bottom: .7rem;
+  padding-left: 1.6rem;
+  position: relative;
+}
+
+ul li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+}
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.6rem;
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  transform: translateY(45px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.6rem;
+}
+
+.table th, .table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  color: var(--muted);
+}
+
+pre {
+  margin-top: 1.5rem;
+  color: var(--muted);
+}
+
+/* FOOTER */
+footer {
+  background: var(--bg-menu);
+  border-top: 1px solid var(--border);
+  padding: 4rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  color: var(--muted);
+}
+
+.footer-content {
+  text-align: center;
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Infraestrutura & Cloud</h1>
-    <p>Kubernetes (k3s) rodando na AWS</p>
-    <p>Docker • Linux • AWS • Redes • TLS</p>
+
+<nav id="mainNav">
+  <div class="nav-container">
+    <a href="#objetivo">Objetivo</a>
+    <a href="#arquitetura">Arquitetura</a>
+    <a href="#aplicacao">Aplicação</a>
+    <a href="#exposicao">Exposição</a>
+    <a href="#tls">TLS</a>
+    <a href="#cicd">CI/CD</a>
+    <a href="#observabilidade">Observabilidade</a>
+    <a href="#alertas">Alertas</a>
+    <a href="#sobre">Sobre</a>
   </div>
+</nav>
+
+<header>
+  <div class="container">
+    <h1>☁️ Projeto Cloud Infra — Kubernetes (k3s) na AWS</h1>
+
+    <p>
+      Projeto prático de <strong>Infraestrutura Cloud, Kubernetes e SRE</strong>,
+      desenvolvido com foco em <strong>ambiente realista de produção</strong>,
+      cobrindo provisionamento, CI/CD, observabilidade, alertas e SLOs.
+    </p>
+
+    <p>
+      Este projeto foi criado como <strong>portfólio técnico</strong>,
+      refletindo cenários reais enfrentados por times de
+      <strong>Infra, Cloud, DevOps e SRE</strong>.
+    </p>
+  </div>
+</header>
+
+<!-- ===== CONTEÚDO COMPLETO ORIGINAL ===== -->
+
+<section id="objetivo" class="container">
+  <h2>🎯 Objetivo do Projeto</h2>
+  <div class="card">
+    <p>
+      Projetar, implementar, operar e documentar uma infraestrutura Kubernetes funcional na AWS,
+      utilizando componentes open-source e soluções custo-efetivas.
+    </p>
+    <ul>
+      <li>Kubernetes (k3s) em ambiente cloud</li>
+      <li>Exposição segura de aplicações (Ingress + TLS)</li>
+      <li>DNS e HTTPS com certificados válidos</li>
+      <li>CI/CD com GitHub Actions</li>
+      <li>Observabilidade completa (métricas, dashboards e alertas)</li>
+      <li>Definição de SLIs, SLOs e Error Budget</li>
+      <li>Troubleshooting real de cluster Kubernetes</li>
+    </ul>
+  </div>
+</section>
+
+<section id="arquitetura" class="container">
+  <h2>🧱 Arquitetura Geral</h2>
+
+  <div class="card">
+    <h3>☁️ Cloud & Infra</h3>
+    <ul>
+      <li><strong>Cloud Provider:</strong> AWS</li>
+      <li><strong>Região:</strong> sa-east-1 (São Paulo)</li>
+      <li><strong>Sistema Operacional:</strong> Ubuntu Server</li>
+      <li><strong>Rede:</strong> VPC padrão AWS</li>
+      <li><strong>IP Público:</strong> Elastic IP</li>
+      <li><strong>Domínio:</strong> lucasdeliberal.com.br</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>☸️ Cluster Kubernetes</h3>
+    <p><strong>Distribuição:</strong> k3s (lightweight Kubernetes)</p>
+
+    <table class="table">
+      <tr>
+        <th>Função</th>
+        <th>Quantidade</th>
+        <th>Observações</th>
+      </tr>
+      <tr>
+        <td>Control Plane</td>
+        <td>1</td>
+        <td>API Server, Scheduler, Controllers</td>
+      </tr>
+      <tr>
+        <td>Worker Node</td>
+        <td>1</td>
+        <td>Execução das workloads</td>
+      </tr>
+      <tr>
+        <td>Total</td>
+        <td>2</td>
+        <td>Preparado para expansão</td>
+      </tr>
+    </table>
+
+    <ul>
+      <li><strong>CNI:</strong> Flannel</li>
+      <li><strong>DNS interno:</strong> CoreDNS</li>
+      <li><strong>Ingress Controller:</strong> NGINX</li>
+    </ul>
+  </div>
+</section>
+
+<section id="aplicacao" class="container">
+  <h2>🐳 Aplicação</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Tipo:</strong> Site estático (portfolio técnico)</li>
+      <li><strong>Servidor Web:</strong> NGINX</li>
+      <li><strong>Containerização:</strong> Docker</li>
+      <li><strong>Registry:</strong> GitHub Container Registry (GHCR)</li>
+      <li><strong>Imagem:</strong> ghcr.io/lucasdeliberal/portfolio-site:latest</li>
+    </ul>
+
+    <p>
+      A aplicação é propositalmente simples.
+      O foco do projeto está <strong>100% na infraestrutura</strong>.
+    </p>
+  </div>
+</section>
+
+<section id="exposicao" class="container">
+  <h2>🌐 Exposição da Aplicação</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Service (ClusterIP):</strong> Comunicação interna entre Pods</li>
+      <li><strong>Ingress (NGINX):</strong> Roteamento HTTP/HTTPS e terminação TLS</li>
+      <li><strong>DNS + Elastic IP (AWS):</strong> Domínios apontando para Elastic IP</li>
+    </ul>
+
+    <h3>🔗 URLs Ativas</h3>
+    <ul>
+      <li><strong>Aplicação:</strong> https://portfolio.lucasdeliberal.com.br</li>
+      <li><strong>Grafana:</strong> https://grafana.lucasdeliberal.com.br</li>
+    </ul>
+  </div>
+</section>
+
+<section id="tls" class="container">
+  <h2>🔐 HTTPS & Certificados</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Ferramenta:</strong> cert-manager</li>
+      <li><strong>CA:</strong> Let’s Encrypt</li>
+      <li><strong>Validação:</strong> HTTP-01</li>
+      <li><strong>Ingress:</strong> NGINX</li>
+    </ul>
+
+    <p>
+      Certificados TLS emitidos automaticamente
+      e renovados sem intervenção manual.
+    </p>
+  </div>
+</section>
+
+<section id="cicd" class="container">
+  <h2>🔁 CI/CD — GitHub Actions</h2>
+  <div class="card">
+    <ul>
+      <li>Push para a branch <strong>main</strong></li>
+      <li>Build da imagem Docker</li>
+      <li>Push para o GitHub Container Registry</li>
+      <li>Deploy automático no cluster Kubernetes</li>
+    </ul>
+
+    <h3>🔐 Segurança e Autenticação</h3>
+    <ul>
+      <li>ServiceAccount dedicada no cluster</li>
+      <li>RBAC com permissões mínimas</li>
+      <li>Kubeconfig exclusivo para CI</li>
+      <li>Secrets armazenados no GitHub</li>
+    </ul>
+  </div>
+</section>
+
+<section id="observabilidade" class="container">
+  <h2>📊 Observabilidade</h2>
+  <div class="card">
+    <ul>
+      <li>Prometheus Operator</li>
+      <li>Prometheus</li>
+      <li>Alertmanager</li>
+      <li>Grafana</li>
+      <li>Node Exporter</li>
+      <li>kube-state-metrics</li>
+    </ul>
+
+    <p>Instalação via Helm (kube-prometheus-stack).</p>
+
+    <h3>📈 Dashboards</h3>
+    <ul>
+      <li>Saúde do cluster</li>
+      <li>Nodes (CPU, memória, disco)</li>
+      <li>Kubernetes (pods, deployments, namespaces)</li>
+      <li>Ingress NGINX (tráfego, latência, erros)</li>
+    </ul>
+  </div>
+</section>
+
+<section id="alertas" class="container">
+  <h2>🚨 Alertas (Prometheus)</h2>
+  <div class="card">
+    <p>
+      Alertas definidos utilizando <strong>PrometheusRule</strong>,
+      organizados por camada e versionados em código.
+    </p>
+
+    <pre>
+k8s/monitoring/alerts/
+├── infra/
+├── kubernetes/
+└── ingress/
+    </pre>
+  </div>
+</section>
+
+<section id="sobre" class="container">
+  <h2>👤 Sobre o autor</h2>
+  <div class="card">
+    <p>
+      Analista de Suporte Técnico com foco em infraestrutura, cloud e Linux,
+      atuando diariamente com troubleshooting, ambientes críticos
+      e automação.
+    </p>
+
+    <p>
+      Este projeto foi criado como forma prática de aplicar conceitos
+      de Kubernetes, CI/CD, observabilidade e SRE em um ambiente
+      o mais próximo possível de produção real.
+    </p>
+
+    <p>
+      O objetivo é demonstrar <strong>processo, pensamento operacional
+      e maturidade técnica</strong>, não apenas ferramentas.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-content">
+    <p>
+      <a href="https://github.com/lucasdeliberal/Projeto_Cloud_Infra.git" target="_blank">GitHub</a>
+      &nbsp;•&nbsp;
+      <a href="https://www.linkedin.com/in/lucas-deliberal-226042128" target="_blank">LinkedIn</a>
+    </p>
+    <p style="margin-top:.6rem;">
+      Projeto autoral • Infraestrutura Cloud Native • SRE
+    </p>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add("visible");
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll(".card").forEach(card => observer.observe(card));
+
+const nav = document.getElementById("mainNav");
+window.addEventListener("scroll", () => {
+  nav.classList.toggle("scrolled", window.scrollY > 80);
+});
+</script>
+
 </body>
 </html>
