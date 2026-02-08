@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
-COPY index.html /usr/share/nginx/html/index.html
+# Remove config default se quiser (opcional)
+# RUN rm /etc/nginx/conf.d/default.conf
 
-COPY assets/ /usr/share/nginx/html/assets/
-
-EXPOSE 80
+# Copia TODO o conteúdo do projeto
+COPY . /usr/share/nginx/html
