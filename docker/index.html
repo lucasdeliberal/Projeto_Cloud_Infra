@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Projeto Cloud Infra — Kubernetes (k3s) na AWS</title>
+<title>Projeto Cloud Infra AWS</title>
 
 <style>
 :root {
@@ -93,6 +93,7 @@ nav.scrolled {
 /* HEADER */
 header {
   padding: 6rem 1.5rem 5rem;
+  max-width: 100%;
 }
 
 h1 {
@@ -172,6 +173,61 @@ pre {
   color: var(--muted);
 }
 
+/* ===== CARROSSEL (ADICIONADO) ===== */
+.carousel {
+  position: relative;
+  margin-top: 2rem;
+  min-height: 460px;
+}
+
+.carousel-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity .8s ease, transform .8s ease;
+  pointer-events: none;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  position: relative;
+}
+
+.carousel-slide img {
+  width: 100%;
+  border-radius: 16px;
+}
+
+.carousel-caption {
+  margin-top: .8rem;
+  text-align: center;
+  font-size: .95rem;
+  color: var(--muted);
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1.2rem;
+}
+
+.carousel-dots button {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  border: none;
+  cursor: pointer;
+}
+
+.carousel-dots button.active {
+  background: var(--primary);
+}
+
 /* FOOTER */
 footer {
   background: var(--bg-menu);
@@ -184,6 +240,95 @@ footer {
 
 .footer-content {
   text-align: center;
+}
+
+.c11{
+  max-width: 1100px;
+  margin: 0px;
+  padding: 3.5rem 1.5rem;
+  max-width: 100%;
+  text-align: center;
+}
+
+.c1{
+  max-width: 50%;
+  margin: auto;
+}
+
+.c1 p{
+  text-align:center;
+  max-width:80% ;
+  margin: 0 auto;
+}
+/* =========================
+   AJUSTES MOBILE
+========================= */
+@media (max-width: 768px) {
+
+  /* HEADER */
+  h1 {
+    font-size: 2.2rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  /* Texto central do topo */
+  .c1 {
+    max-width: 100%;
+  }
+
+  .c1 p {
+    max-width: 100%;
+    font-size: 0.95rem;
+  }
+
+  /* MENU */
+  .nav-container {
+    justify-content: flex-start;
+    gap: 1.2rem;
+    padding: 1rem;
+  }
+
+  .nav-container a {
+    font-size: 0.95rem;
+  }
+
+  /* CONTAINERS */
+  .container {
+    padding: 2.5rem 1.2rem;
+  }
+
+  /* CARDS */
+  .card {
+    padding: 1.8rem;
+  }
+
+  /* TABELA (Arquitetura) */
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* CARROSSEL */
+  .carousel {
+    min-height: auto;
+  }
+
+  .carousel-slide img {
+    border-radius: 12px;
+  }
+
+  .carousel-caption {
+    font-size: 0.85rem;
+  }
 }
 </style>
 </head>
@@ -205,24 +350,24 @@ footer {
 </nav>
 
 <header>
-  <div class="container">
-    <h1>☁️ Projeto Cloud Infra — Kubernetes (k3s) na AWS</h1>
-
-    <p>
-      Projeto prático de <strong>Infraestrutura Cloud, Kubernetes e SRE</strong>,
-      desenvolvido com foco em <strong>ambiente realista de produção</strong>,
-      cobrindo provisionamento, CI/CD, observabilidade, alertas e SLOs.
-    </p>
-
-    <p>
-      Este projeto foi criado como <strong>portfólio técnico</strong>,
-      refletindo cenários reais enfrentados por times de
-      <strong>Infra, Cloud, DevOps e SRE</strong>.
-    </p>
+  <div class="c11">
+    <div class="c1">
+      <h1>☁️ Projeto Cloud Infra AWS</h1>
+      <div>
+        <p>
+          Projeto prático de <strong>Infraestrutura Cloud, Kubernetes e SRE</strong>,
+          desenvolvido com foco em <strong>ambiente realista de produção</strong>,
+          cobrindo provisionamento, CI/CD, observabilidade, alertas e SLOs.
+        </p>
+        <p>
+          Este projeto foi criado como <strong>portfólio técnico</strong>,
+          refletindo cenários reais enfrentados por times de
+          <strong>Infra, Cloud, DevOps e SRE</strong>.
+        </p>
+      </div>
+    </div>
   </div>
 </header>
-
-<!-- ===== CONTEÚDO COMPLETO ORIGINAL ===== -->
 
 <section id="objetivo" class="container">
   <h2>🎯 Objetivo do Projeto</h2>
@@ -237,52 +382,32 @@ footer {
       <li>DNS e HTTPS com certificados válidos</li>
       <li>CI/CD com GitHub Actions</li>
       <li>Observabilidade completa (métricas, dashboards e alertas)</li>
-      <li>Definição de SLIs, SLOs e Error Budget</li>
-      <li>Troubleshooting real de cluster Kubernetes</li>
     </ul>
   </div>
 </section>
 
 <section id="arquitetura" class="container">
   <h2>🧱 Arquitetura Geral</h2>
-
   <div class="card">
     <h3>☁️ Cloud & Infra</h3>
     <ul>
       <li><strong>Cloud Provider:</strong> AWS</li>
       <li><strong>Região:</strong> sa-east-1 (São Paulo)</li>
+      <li><strong>Recursos Utilizados:</strong> EC2, Route53</li>
       <li><strong>Sistema Operacional:</strong> Ubuntu Server</li>
-      <li><strong>Rede:</strong> VPC padrão AWS</li>
+      <li><strong>Rede:</strong> VPC e subnets AWS</li>
       <li><strong>IP Público:</strong> Elastic IP</li>
       <li><strong>Domínio:</strong> lucasdeliberal.com.br</li>
     </ul>
-  </div>
 
-  <div class="card">
     <h3>☸️ Cluster Kubernetes</h3>
-    <p><strong>Distribuição:</strong> k3s (lightweight Kubernetes)</p>
+    <p><strong>Distribuição:</strong> k3s (versão otimizada)</p>
 
     <table class="table">
-      <tr>
-        <th>Função</th>
-        <th>Quantidade</th>
-        <th>Observações</th>
-      </tr>
-      <tr>
-        <td>Control Plane</td>
-        <td>1</td>
-        <td>API Server, Scheduler, Controllers</td>
-      </tr>
-      <tr>
-        <td>Worker Node</td>
-        <td>1</td>
-        <td>Execução das workloads</td>
-      </tr>
-      <tr>
-        <td>Total</td>
-        <td>2</td>
-        <td>Preparado para expansão</td>
-      </tr>
+      <tr><th>Função</th><th>Quantidade</th><th>Observações</th></tr>
+      <tr><td>Control Plane</td><td>1</td><td>API Server, Scheduler, Controllers</td></tr>
+      <tr><td>Worker Node</td><td>1</td><td>Execução das workloads</td></tr>
+      <tr><td>Total</td><td>2</td><td>Preparado para expansão</td></tr>
     </table>
 
     <ul>
@@ -303,7 +428,6 @@ footer {
       <li><strong>Registry:</strong> GitHub Container Registry (GHCR)</li>
       <li><strong>Imagem:</strong> ghcr.io/lucasdeliberal/portfolio-site:latest</li>
     </ul>
-
     <p>
       A aplicação é propositalmente simples.
       O foco do projeto está <strong>100% na infraestrutura</strong>.
@@ -319,7 +443,6 @@ footer {
       <li><strong>Ingress (NGINX):</strong> Roteamento HTTP/HTTPS e terminação TLS</li>
       <li><strong>DNS + Elastic IP (AWS):</strong> Domínios apontando para Elastic IP</li>
     </ul>
-
     <h3>🔗 URLs Ativas</h3>
     <ul>
       <li><strong>Aplicação:</strong> https://portfolio.lucasdeliberal.com.br</li>
@@ -337,7 +460,6 @@ footer {
       <li><strong>Validação:</strong> HTTP-01</li>
       <li><strong>Ingress:</strong> NGINX</li>
     </ul>
-
     <p>
       Certificados TLS emitidos automaticamente
       e renovados sem intervenção manual.
@@ -354,7 +476,6 @@ footer {
       <li>Push para o GitHub Container Registry</li>
       <li>Deploy automático no cluster Kubernetes</li>
     </ul>
-
     <h3>🔐 Segurança e Autenticação</h3>
     <ul>
       <li>ServiceAccount dedicada no cluster</li>
@@ -386,6 +507,44 @@ footer {
       <li>Kubernetes (pods, deployments, namespaces)</li>
       <li>Ingress NGINX (tráfego, latência, erros)</li>
     </ul>
+
+    <!-- CARROSSEL GRAFANA -->
+    <div class="carousel" id="grafanaCarousel">
+      <div class="carousel-slide active">
+        <img src="assets/screenshots-grafana/kubernetes-cluster.png" alt="Cluster Kubernetes">
+        <div class="carousel-caption">
+          Visão geral do cluster Kubernetes com métricas de CPU, memória e workloads.
+        </div>
+      </div>
+
+      <div class="carousel-slide">
+        <img src="assets/screenshots-grafana/node-exporter-full.png" alt="Node Exporter">
+        <div class="carousel-caption">
+          Métricas detalhadas de CPU, memória, disco e rede dos nodes.
+        </div>
+      </div>
+
+      <div class="carousel-slide">
+        <img src="assets/screenshots-grafana/nginx-ingress-controller.png" alt="NGINX Ingress">
+        <div class="carousel-caption">
+          Tráfego HTTP, latência e códigos de resposta do Ingress NGINX.
+        </div>
+      </div>
+
+      <div class="carousel-slide">
+        <img src="assets/screenshots-grafana/alertmanager.png" alt="Alertmanager">
+        <div class="carousel-caption">
+          Alertas ativos e estado das regras no Alertmanager.
+        </div>
+      </div>
+
+      <div class="carousel-dots">
+        <button class="active" data-index="0"></button>
+        <button data-index="1"></button>
+        <button data-index="2"></button>
+        <button data-index="3"></button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -396,7 +555,6 @@ footer {
       Alertas definidos utilizando <strong>PrometheusRule</strong>,
       organizados por camada e versionados em código.
     </p>
-
     <pre>
 k8s/monitoring/alerts/
 ├── infra/
@@ -407,26 +565,33 @@ k8s/monitoring/alerts/
 </section>
 
 <section id="sobre" class="container">
-  <h2>👤 Sobre o autor</h2>
+  <h2>👤 Sobre mim</h2>
   <div class="card">
     <p>
-      Analista de Suporte Técnico com foco em infraestrutura, cloud e Linux,
-      atuando diariamente com troubleshooting, ambientes críticos
-      e automação.
+      Analista de Infraestrutura e Cloud, com atuação em <strong>cenários híbridos
+      (on-premises e AWS)</strong>, envolvendo servidores Linux e Windows, redes,
+      segurança e automação. No dia a dia, trabalho com
+      <strong>troubleshooting de ambientes críticos</strong>, sustentação de serviços
+      essenciais e implementação de soluções focadas em
+      <strong>alta disponibilidade, segurança e escalabilidade</strong>.
     </p>
 
     <p>
-      Este projeto foi criado como forma prática de aplicar conceitos
-      de Kubernetes, CI/CD, observabilidade e SRE em um ambiente
-      o mais próximo possível de produção real.
+      Este projeto foi desenvolvido como uma forma prática de
+      <strong>consolidar e demonstrar conhecimentos em Kubernetes, CI/CD,
+      observabilidade e práticas de SRE</strong>, aplicados em um ambiente que simula
+      cenários reais de produção, desde a infraestrutura até a operação contínua.
     </p>
 
     <p>
-      O objetivo é demonstrar <strong>processo, pensamento operacional
-      e maturidade técnica</strong>, não apenas ferramentas.
+      O objetivo não é apenas apresentar ferramentas, mas evidenciar
+      <strong>processo, tomada de decisão técnica, pensamento operacional
+      e maturidade profissional</strong>, alinhados às demandas reais de times de
+      Infra, Cloud, DevOps e SRE.
     </p>
   </div>
 </section>
+
 
 <footer>
   <div class="footer-content">
@@ -454,6 +619,39 @@ const nav = document.getElementById("mainNav");
 window.addEventListener("scroll", () => {
   nav.classList.toggle("scrolled", window.scrollY > 80);
 });
+
+/* CARROSSEL */
+const slides = document.querySelectorAll("#grafanaCarousel .carousel-slide");
+const dots = document.querySelectorAll("#grafanaCarousel button");
+let current = 0;
+let timer;
+const INTERVAL = 7000;
+
+function showSlide(index) {
+  slides.forEach(s => s.classList.remove("active"));
+  dots.forEach(d => d.classList.remove("active"));
+  slides[index].classList.add("active");
+  dots[index].classList.add("active");
+  current = index;
+}
+
+function nextSlide() {
+  showSlide((current + 1) % slides.length);
+}
+
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(nextSlide, INTERVAL);
+}
+
+dots.forEach(dot => {
+  dot.addEventListener("click", () => {
+    showSlide(Number(dot.dataset.index));
+    startTimer();
+  });
+});
+
+startTimer();
 </script>
 
 </body>
