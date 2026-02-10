@@ -1,49 +1,40 @@
-# ========================
-# Kubernetes / Cloud
-# ========================
+# =========================
+# Security / Credentials
+# =========================
 kubeconfig*
-*kubeconfig
 *.kubeconfig
-kuberconfig-ci.yaml
-
-# Certificados
 *.pem
-*.crt
 *.key
-certs/
-cert-manager/certs/
-
-# ========================
-# Secrets / Env
-# ========================
+*.crt
 .env
 .env.*
-secrets.yaml
 
-# ========================
-# Logs / Temp
-# ========================
-logs/
-*.log
-tmp/
-.cache/
-
-# ========================
-# OS / Editor
-# ========================
+# =========================
+# OS files
+# =========================
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# =========================
+# Editors / IDEs
+# =========================
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# ========================
-# Helm
-# ========================
-charts/
-*.tgz
+# =========================
+# Temporary / Cache
+# =========================
+tmp/
+temp/
+*.tmp
+*.log
 
-# ========================
-# Node / Python (se usar futuramente)
-# ========================
+# =========================
+# Build / Dependencies
+# =========================
 node_modules/
-__pycache__/
+dist/
+build/
